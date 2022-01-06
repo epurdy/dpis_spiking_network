@@ -69,7 +69,7 @@ class SONN:
         return num_hits / len(y)
 
     def connect(self, *, num_new, x, y, init):
-        if self.from_
+        pass
 
     def learn(self, *, x, y, adj_pos):
         pass
@@ -95,7 +95,7 @@ class SONN:
 
             print('end of epoch', epoch)
             print('\ttrain', self.test(x=x_train, y=y_train))
-            print('\ttest', self.test(x=x_train, y=y_train))
+            print('\ttest', self.test(x=x_test, y=y_test))
 
 
 
