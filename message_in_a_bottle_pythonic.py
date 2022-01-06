@@ -32,27 +32,27 @@ class SONN:
         self.quant_neg = 0.0
         self.quant_div_neg = 900.0
         self.quant_up_neg = 150.0
-        
+
         self.num_new = 10
         self.div_new = 10
 
         self.adj_pos = 500
         self.adj_neg = 100
-        
+
     def get_num_spikes(self, *, x, y):
         # [batch, classes]
         num_spikes = np.zeros((len(y), self.num_classes), dtype=np.int64)
         for i in range(x.shape[0]):
             # [classes, nsize]
             potential = np.zeros((self.num_classes, self.nsize), dtype=np.int64)
-            for time in range(self.num_cycles):            
+            for time in range(self.num_cycles):
                 potential += self.weights[x[i, self.from_] > self.thresholds[time]].sum(axis=-1)
                 # [classes, nsize]
                 spike = (potential > self.threshold)
                 num_spikes[i] += spike.sum(axis=-1)
                 potential[~spike] >>= 1
         return num_spikes
-            
+
     def test(self, *, x, y, learning=False):
         # [batch, classes]
         num_spikes = self.get_num_spikes(x=x, y=y)
@@ -73,14 +73,14 @@ class SONN:
 
     def learn(self, *, x, y, adj_pos):
         pass
-    
+
     def train(self, *, x, y, error):
         for i in range(x.shape[0]):
             if error[i] >= self.quant_pos:
                 self.connect(num_new=self.num_new, x=x[i], y=y[i],
                              init=self.threshold/self.div_new)
                 self.learn(x=x[i], y=y[i], adj_pos=self.adj_pos)
-                
+
     def train_test_loop(self, *, x_train, x_test, y_train, y_test):
         for epoch in range(1_000_000_000):
             training_indices = list(range(len(x_train)))
@@ -96,10 +96,10 @@ class SONN:
             print('end of epoch', epoch)
             print('\ttrain', self.test(x=x_train, y=y_train))
             print('\ttest', self.test(x=x_train, y=y_train))
-                    
-            
 
-        
+
+
+
 def main(
         nsyn=10,
         nsize=792,
@@ -121,7 +121,7 @@ def main(
     assert len(x_test.shape) == 3
     x_train = x_train.reshape(-1, x_train.shape[1] * x_train.shape[2])
     x_test = x_test.reshape(-1, x_test.shape[1] * x_test.shape[2])
-    
+
     sonn = SONN(nsyn=nsyn, nsize=nsize, batch_size=batch_size,
                 num_classes=num_classes, input_size=x_train.shape[1],
                 num_cycles=num_cycles, thresholds=color_thresholds,
@@ -129,6 +129,7 @@ def main(
 
     sonn.train_test_loop(x_train=x_train, x_test=x_test,
                          y_train=y_train, y_test=y_test)
+
 
 
 
